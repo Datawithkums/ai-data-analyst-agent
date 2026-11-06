@@ -1,7 +1,13 @@
 import pandas as pd
 
 
-def group_analysis(file_path, group_column, value_column, operation="mean"):
+def group_analysis(
+    file_path,
+    group_column,
+    value_column,
+    operation="mean",
+    top_n=10
+):
 
     df = pd.read_csv(file_path)
 
@@ -23,4 +29,16 @@ def group_analysis(file_path, group_column, value_column, operation="mean"):
     else:
         raise ValueError("Unsupported operation")
 
-    return result.sort_values(ascending=False)
+    if operation == "min":
+        result = result.sort_values(ascending=True)
+    else:
+        result = result.sort_values(ascending=False)
+
+    result = result.head(top_n)
+
+    return {
+        "group_column": group_column,
+        "value_column": value_column,
+        "operation": operation,
+        "top_results": result.to_dict()
+    }
